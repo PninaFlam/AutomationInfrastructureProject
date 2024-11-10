@@ -1,0 +1,17 @@
+נוב׳ 07, 2024 1:54:14 אחה״צ org.example.lifeCycle.LogExtension writeToLog
+INFO: Start tryTest
+נוב׳ 07, 2024 1:54:14 אחה״צ org.example.lifeCycle.LogExtension writeToLog
+INFO: Start test test1()
+נוב׳ 07, 2024 1:54:18 אחה״צ org.example.lifeCycle.LogExtension writeToLog
+INFO: Finish test test1()
+נוב׳ 07, 2024 1:54:18 אחה״צ org.example.lifeCycle.LogExtension writeToLog
+INFO: test1() Success!!
+נוב׳ 07, 2024 1:54:19 אחה״צ org.example.lifeCycle.LogExtension writeToLog
+INFO: Start test test2()
+נוב׳ 07, 2024 1:54:19 אחה״צ org.example.lifeCycle.LogExtension writeToLog
+INFO: Finish test test2()
+נוב׳ 07, 2024 1:54:19 אחה״צ org.example.lifeCycle.LogExtension writeToLog
+INFO: test2() Failed!!
+expected: <true> but was: <false>
+נוב׳ 07, 2024 1:54:19 אחה״צ org.example.lifeCycle.LogExtension writeToLog
+INFO: Finish All tryTest
