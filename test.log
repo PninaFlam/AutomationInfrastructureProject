@@ -1,17 +1,19 @@
-נוב׳ 07, 2024 1:54:14 אחה״צ org.example.lifeCycle.LogExtension writeToLog
+נוב׳ 12, 2024 11:39:31 לפנה״צ org.example.lifeCycle.LogExtension writeToLog
 INFO: Start tryTest
-נוב׳ 07, 2024 1:54:14 אחה״צ org.example.lifeCycle.LogExtension writeToLog
-INFO: Start test test1()
-נוב׳ 07, 2024 1:54:18 אחה״צ org.example.lifeCycle.LogExtension writeToLog
-INFO: Finish test test1()
-נוב׳ 07, 2024 1:54:18 אחה״צ org.example.lifeCycle.LogExtension writeToLog
-INFO: test1() Success!!
-נוב׳ 07, 2024 1:54:19 אחה״צ org.example.lifeCycle.LogExtension writeToLog
+נוב׳ 12, 2024 11:39:32 לפנה״צ org.example.lifeCycle.LogExtension writeToLog
 INFO: Start test test2()
-נוב׳ 07, 2024 1:54:19 אחה״צ org.example.lifeCycle.LogExtension writeToLog
+נוב׳ 12, 2024 11:39:37 לפנה״צ org.example.lifeCycle.LogExtension writeToLog
 INFO: Finish test test2()
-נוב׳ 07, 2024 1:54:19 אחה״צ org.example.lifeCycle.LogExtension writeToLog
+נוב׳ 12, 2024 11:39:37 לפנה״צ org.example.lifeCycle.LogExtension writeToLog
 INFO: test2() Failed!!
-expected: <true> but was: <false>
-נוב׳ 07, 2024 1:54:19 אחה״צ org.example.lifeCycle.LogExtension writeToLog
+no such element: Unable to locate element: {"method":"xpath","selector":"//li[@id='aaa']//a"}
+  (Session info: chrome=130.0.6723.92)
+For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Build info: version: '4.25.0', revision: '8a8aea2337'
+System info: os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '22.0.2'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Command: [e3cf208196eced72cd4cfaf13b1543b5, findElement {using=xpath, value=//li[@id='aaa']//a}]
+Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 130.0.6723.92, chrome: {chromedriverVersion: 130.0.6723.116 (6ac35f94ae3..., userDataDir: C:\Users\user1\AppData\Loca...}, fedcm:accounts: true, goog:chromeOptions: {debuggerAddress: localhost:54811}, networkConnectionEnabled: false, pageLoadStrategy: normal, platformName: windows, proxy: Proxy(), se:cdp: ws://localhost:54811/devtoo..., se:cdpVersion: 130.0.6723.92, setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:extension:minPinLength: true, webauthn:extension:prf: true, webauthn:virtualAuthenticators: true}
+Session ID: e3cf208196eced72cd4cfaf13b1543b5
+נוב׳ 12, 2024 11:39:38 לפנה״צ org.example.lifeCycle.LogExtension writeToLog
 INFO: Finish All tryTest

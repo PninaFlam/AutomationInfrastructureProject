@@ -1,3 +1,6 @@
+/**
+ * An extension class for managing WebDriver lifecycle in JUnit tests.
+ */
 package org.example.lifeCycle;
 
 import org.example.ActionsForDriver.ActionHandler;
@@ -12,8 +15,7 @@ public class Extension extends LogExtension
     private static WebDriver driver;
 
     /**
-     * Callback that is invoked once <em>before</em> all tests in the current
-     * container.
+     * Callback that is invoked once before all tests in the current container.
      *
      * @param context the current extension context; never {@code null}
      */
@@ -21,13 +23,13 @@ public class Extension extends LogExtension
     public void beforeAll(ExtensionContext context) throws Exception {
         driver = new InitDriver().getDriver(); // Initialize the WebDriver instance
         ActionHandler actionHandler = new ActionHandler(driver);
-        storeDriverInContext(context, driver);
+        setDriverInContext(context, driver);
         writeToLog("Start " + context.getDisplayName());
     }
 
     /**
-     * Callback that is invoked <em>before</em> an individual test and any
-     * user-defined setup methods for that test have been executed.
+     * Callback that is invoked before an individual test and any user-defined setup methods
+     * for that test have been executed.
      *
      * @param context the current extension context; never {@code null}
      */
@@ -37,8 +39,7 @@ public class Extension extends LogExtension
     }
 
     /**
-     * Callback that is invoked once <em>after</em> all tests in the current
-     * container.
+     * Callback that is invoked once after all tests in the current container.
      *
      * @param context the current extension context; never {@code null}
      */
@@ -49,8 +50,8 @@ public class Extension extends LogExtension
     }
 
     /**
-     * Callback that is invoked <em>after</em> an individual test and any
-     * user-defined teardown methods for that test have been executed.
+     * Callback that is invoked after an individual test and any user-defined teardown methods
+     * for that test have been executed.
      *
      * @param context the current extension context; never {@code null}
      */
@@ -59,7 +60,7 @@ public class Extension extends LogExtension
         writeToLog("Finish test " + context.getDisplayName());
     }
 
-    private void storeDriverInContext(ExtensionContext context, WebDriver driver) {
+    private void setDriverInContext(ExtensionContext context, WebDriver driver) {
         context.getStore(NAMESPACE).put("driver", driver);
     }
 

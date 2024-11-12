@@ -26,19 +26,19 @@ public class TestWatcherProject extends LogExtension implements TestWatcher {
      * Invoked when a test method fails.
      *
      * @param context the extension context for the test
-     * @param cause   the cause of the test failure
+     * @param cause the cause of the test failure
      */
     @Override
     public void testFailed(ExtensionContext context, Throwable cause) {
         writeToLog(context.getDisplayName() + " Failed!!\n" + cause.getLocalizedMessage());
-        Screenshot.TakeScreenshot(context);
+        Screenshot.TakeScreenshot(context);//add screenshot to Allure
     }
 
     /**
      * Invoked when a test method is aborted.
      *
      * @param context the extension context for the test
-     * @param cause   the cause of the test abortion
+     * @param cause the cause of the test abortion
      */
     @Override
     public void testAborted(ExtensionContext context, Throwable cause) {
@@ -49,7 +49,7 @@ public class TestWatcherProject extends LogExtension implements TestWatcher {
      * Invoked when a test method is disabled.
      *
      * @param context the extension context for the test
-     * @param reason  the reason why the test was disabled
+     * @param reason the reason why the test was disabled
      */
     @Override
     public void testDisabled(ExtensionContext context, Optional<String> reason) {

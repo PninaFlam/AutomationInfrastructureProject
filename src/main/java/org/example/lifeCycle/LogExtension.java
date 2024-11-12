@@ -1,5 +1,5 @@
 /**
- * class for log management.
+ * A class for log management.
  */
 package org.example.lifeCycle;
 
@@ -20,7 +20,7 @@ public class LogExtension implements BeforeAllCallback, ExtensionContext.Store.C
 
     /**
      * Callback that is invoked once before all tests in the current container.
-     * This method initial the log file
+     * This method initializes the log file.
      *
      * @param context the current extension context; never null
      */
@@ -40,7 +40,6 @@ public class LogExtension implements BeforeAllCallback, ExtensionContext.Store.C
             }
             isRun = true;
         }
-
     }
 
     /**

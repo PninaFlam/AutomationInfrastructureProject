@@ -1,3 +1,6 @@
+/**
+ * A class responsible for initializing the WebDriver based on properties loaded from a configuration file.
+ */
 package org.example.browser;
 
 import org.example.Utils.PropertiesLoader;
@@ -8,6 +11,9 @@ import java.util.Properties;
 public class InitDriver {
     private WebDriver driver;
 
+    /**
+     * Initializes the WebDriver based on properties loaded from a configuration file.
+     */
     public InitDriver() {
         try {
             Properties properties = new PropertiesLoader().loadProperties("webDriver.properties");
@@ -23,6 +29,10 @@ public class InitDriver {
         }
     }
 
+    /**
+     * Get the initialized WebDriver instance.
+     * @return The initialized WebDriver instance.
+     */
     public WebDriver getDriver() {
         return driver;
     }
