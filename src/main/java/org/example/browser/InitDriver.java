@@ -5,6 +5,7 @@ package org.example.browser;
 
 import org.example.Utils.PropertiesLoader;
 import org.openqa.selenium.WebDriver;
+
 import java.io.IOException;
 import java.util.Properties;
 
@@ -31,6 +32,7 @@ public class InitDriver {
 
     /**
      * Get the initialized WebDriver instance.
+     *
      * @return The initialized WebDriver instance.
      */
     public WebDriver getDriver() {

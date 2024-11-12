@@ -7,10 +7,11 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 
-public class EdgeDriverFactory implements WebDriverFactory{
+public class EdgeDriverFactory implements WebDriverFactory {
 
     /**
      * Creates a new instance of EdgeDriver.
+     *
      * @return A new EdgeDriver instance.
      */
     @Override

@@ -33,7 +33,6 @@ public class tryTest {
     //@Retry3TimesExtension
     void test2()
     {
-        //assertTrue(1==2);
         click(By.xpath("//li[@id='aaa']//a"));
 
     }

@@ -7,10 +7,11 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-public class ChromeDriverFactory implements WebDriverFactory{
+public class ChromeDriverFactory implements WebDriverFactory {
 
     /**
      * Creates a new instance of ChromeDriver.
+     *
      * @return A new ChromeDriver instance.
      */
     @Override

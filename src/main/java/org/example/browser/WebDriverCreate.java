@@ -4,6 +4,7 @@
 package org.example.browser;
 
 import org.openqa.selenium.WebDriver;
+
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
@@ -13,6 +14,7 @@ public class WebDriverCreate {
 
     /**
      * Creates a WebDriver instance based on the specified properties.
+     *
      * @param properties The properties containing the driver type information.
      * @return The created WebDriver instance.
      */

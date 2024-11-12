@@ -9,6 +9,7 @@ public interface WebDriverFactory {
 
     /**
      * Creates a new instance of WebDriver.
+     *
      * @return The created WebDriver instance.
      */
     WebDriver createWebDriver();

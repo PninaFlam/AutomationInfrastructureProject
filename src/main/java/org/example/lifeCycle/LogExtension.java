@@ -3,7 +3,6 @@
  */
 package org.example.lifeCycle;
 
-import io.qameta.allure.Attachment;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 

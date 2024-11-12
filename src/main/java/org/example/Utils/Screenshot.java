@@ -18,7 +18,7 @@ public class Screenshot {
      * @return a byte array representing the screenshot in PNG format
      */
     @Attachment(value = "Screenshot", type = "image/png")
-    public static byte[] TakeScreenshot(ExtensionContext context) {
+    public static byte[] takeScreenshot(ExtensionContext context) {
         WebDriver driver = Extension.getDriverFromContext(context);
         return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
     }

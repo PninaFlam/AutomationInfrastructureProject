@@ -60,16 +60,34 @@ public class Extension extends LogExtension
         writeToLog("Finish test " + context.getDisplayName());
     }
 
+    /**
+     * Sets the WebDriver instance in the ExtensionContext store.
+     *
+     * @param context The ExtensionContext to store the WebDriver instance in.
+     * @param driver  The WebDriver instance to store.
+     */
     private void setDriverInContext(ExtensionContext context, WebDriver driver) {
         context.getStore(NAMESPACE).put("driver", driver);
     }
 
+    /**
+     * Retrieves the WebDriver instance from the ExtensionContext store.
+     *
+     * @param context The ExtensionContext to retrieve the WebDriver instance from.
+     * @return The WebDriver instance stored in the context.
+     */
     public static WebDriver getDriverFromContext(ExtensionContext context) {
         return context.getStore(NAMESPACE).get("driver", WebDriver.class);
     }
 
+    /**
+     * Retrieves the WebDriver instance.
+     *
+     * @return The WebDriver instance.
+     */
     public static WebDriver getDriver() {
         return driver;
     }
+
 
 }
