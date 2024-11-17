@@ -1,15 +1,13 @@
 import io.qameta.allure.Description;
 import org.example.Annotations.DriverAndLoggerExtension;
-import org.example.Annotations.Retry3TimesExtension;
-import org.example.lifeCycle.RetryExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import static org.example.ActionsForDriver.ActionHandler.click;
+import static org.example.ActionsForDriver.FindElementHelper.findElement;
 import static org.example.lifeCycle.Extension.getDriver;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @DriverAndLoggerExtension
@@ -30,10 +28,8 @@ public class tryTest {
 
     @Test
     @Description("test 2 try")
-    //@Retry3TimesExtension
-    void test2()
-    {
-        click(By.xpath("//li[@id='aaa']//a"));
-
+    void test2() {
+        WebElement element = findElement(By.xpath("//li[@id='aaa']//a"));
+        //click(By.xpath("//li[@id='aaa']//a"));
     }
 }

@@ -1,0 +1,794 @@
+Author:  
+
+/**
+ * The ActionHandler class provides methods for handling actions on web elements using Selenium WebDriver.
+ */
+package org.example.ActionsForDriver;
+
+import org.example.Utils.Retry;
+import org.example.Utils.WaitUtility;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+
+import static org.example.ActionsForDriver.FindElementHelper.findElement;
+
+public class ActionHandler {
+    private static WebDriver driver;
+    private static WaitUtility waitUtility;
+    private FindElementHelper findElement;
+
+    /**
+     * Constructor for ActionHandler class.
+     *
+     * @param driver The WebDriver instance to be used for actions.
+     */
+    public ActionHandler(WebDriver driver) {
+        this.driver = driver;
+        this.waitUtility = new WaitUtility(driver);
+        this.findElement = new FindElementHelper(driver);
+    }
+
+    /**
+     * Creates a runnable function for clicking an element identified by the given locator.
+     *
+     * @param locator The locator used to find the element to click.
+     * @return A runnable function that clicks the element.
+     */
+    private static Runnable clickRunnable(By locator) {
+        return () -> {
+            WebElement elem = FindElementHelper.findElement(locator);
+            waitUtility.waitForElementToBeClickable(elem).click();
+        };
+    }
+
+    /**
+     * Clicks an element identified by the given locator with retries in case of failure.
+     *
+     * @param locator The locator used to find the element to click.
+     */
+    public static void click(By locator) {
+        Retry.retry(clickRunnable(locator), 3,0);
+    }
+
+    /**
+     * Enters text into a text field identified by the given locator.
+     *
+     * @param locator The locator used to find the text field.
+     * @param content The text to be entered into the text field.
+     */
+    public static void sendKeys(By locator, String content) {
+        WebElement element = FindElementHelper.findElement(locator);
+        element.clear();
+        element.sendKeys(content);
+    }
+
+    /**
+     * Checks if a web element identified by the given locator is displayed.
+     *
+     * @param locator The locator used to find the web element.
+     * @return true if the element is displayed, false otherwise.
+     */
+    public static boolean isDisplayed(By locator) {
+        return findElement(locator).isDisplayed();
+    }
+}
+
+/**
+ * A factory class for creating ChromeDriver instances.
+ */
+package org.example.browser;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class ChromeDriverFactory implements WebDriverFactory {
+
+    /**
+     * Creates a new instance of ChromeDriver.
+     *
+     * @return A new ChromeDriver instance.
+     */
+    @Override
+    public WebDriver createWebDriver() {
+        WebDriverManager.chromedriver().setup();
+        return new ChromeDriver();
+    }
+}
+
+/**
+ * The CreateFile class provides a method for creating a new file and writing content to it.
+ */
+package org.example.Utils;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+public class CreateFile {
+
+    /**
+     * Creates a new file with the specified file name and writes the given content to it.
+     *
+     * @param fileName The name of the file to create.
+     * @param content The content to write to the file.
+     */
+    public static void CreateFile(String fileName, String content) {
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
+            writer.println(content);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+/**
+ * The DriverAndLoggerExtension annotation is used to apply the TestWatcherProject and Extension extensions
+ * to classes or methods in JUnit Jupiter tests.
+ */
+package org.example.Annotations;
+
+import org.example.lifeCycle.Extension;
+import org.example.lifeCycle.TestWatcherProject;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@ExtendWith({TestWatcherProject.class, Extension.class})
+public @interface DriverAndLoggerExtension {
+}
+
+/**
+ * A factory class for creating EdgeDriver instances.
+ */
+package org.example.browser;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.edge.EdgeDriver;
+
+public class EdgeDriverFactory implements WebDriverFactory {
+
+    /**
+     * Creates a new instance of EdgeDriver.
+     *
+     * @return A new EdgeDriver instance.
+     */
+    @Override
+    public WebDriver createWebDriver() {
+        WebDriverManager.edgedriver().setup();
+        return new EdgeDriver();
+    }
+}
+
+/**
+ * An extension class for managing WebDriver lifecycle in JUnit tests.
+ */
+package org.example.lifeCycle;
+
+import org.example.ActionsForDriver.ActionHandler;
+import org.example.browser.InitDriver;
+import org.junit.jupiter.api.extension.*;
+import org.openqa.selenium.WebDriver;
+
+import static org.example.Utils.CreateFile.CreateFile;
+
+public class Extension extends LogExtension
+        implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback {
+
+    private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(Extension.class);
+    private static WebDriver driver;
+
+    /**
+     * Callback that is invoked once before all tests in the current container.
+     *
+     * @param context the current extension context; never {@code null}
+     */
+    @Override
+    public void beforeAll(ExtensionContext context) throws Exception {
+        driver = new InitDriver().getDriver(); // Initialize the WebDriver instance
+        ActionHandler actionHandler = new ActionHandler(driver);
+        setDriverInContext(context, driver);
+        //Create a property file for a parallel run
+        CreateFile("src/main/resources/junit-platform.properties",
+                "junit.jupiter.execution.parallel.enabled=true\n" +
+                        "junit.jupiter.execution.parallel.mode.default=concurrent\n" +
+                        "junit.jupiter.execution.parallel.config.strategy=fixed\n" +
+                        "junit.jupiter.execution.parallel.config.fixed.parallelism=4\n");
+        writeToLog("Start " + context.getDisplayName());
+    }
+
+    /**
+     * Callback that is invoked before an individual test and any user-defined setup methods
+     * for that test have been executed.
+     *
+     * @param context the current extension context; never {@code null}
+     */
+    @Override
+    public void beforeEach(ExtensionContext context) throws Exception {
+        writeToLog("Start test " + context.getDisplayName());
+    }
+
+    /**
+     * Callback that is invoked once after all tests in the current container.
+     *
+     * @param context the current extension context; never {@code null}
+     */
+    @Override
+    public void afterAll(ExtensionContext context) throws Exception {
+        writeToLog("Finish All " + context.getDisplayName());
+        driver.quit();
+    }
+
+    /**
+     * Callback that is invoked after an individual test and any user-defined teardown methods
+     * for that test have been executed.
+     *
+     * @param context the current extension context; never {@code null}
+     */
+    @Override
+    public void afterEach(ExtensionContext context) throws Exception {
+        writeToLog("Finish test " + context.getDisplayName());
+    }
+
+    /**
+     * Sets the WebDriver instance in the ExtensionContext store.
+     *
+     * @param context The ExtensionContext to store the WebDriver instance in.
+     * @param driver  The WebDriver instance to store.
+     */
+    private void setDriverInContext(ExtensionContext context, WebDriver driver) {
+        context.getStore(NAMESPACE).put("driver", driver);
+    }
+
+    /**
+     * Retrieves the WebDriver instance from the ExtensionContext store.
+     *
+     * @param context The ExtensionContext to retrieve the WebDriver instance from.
+     * @return The WebDriver instance stored in the context.
+     */
+    public static WebDriver getDriverFromContext(ExtensionContext context) {
+        return context.getStore(NAMESPACE).get("driver", WebDriver.class);
+    }
+
+    /**
+     * Retrieves the WebDriver instance.
+     *
+     * @return The WebDriver instance.
+     */
+    public static WebDriver getDriver() {
+        return driver;
+    }
+
+
+}
+
+/**
+ * The FindElementHelper class provides helper methods for finding web elements using Selenium WebDriver.
+ */
+package org.example.ActionsForDriver;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+
+public class FindElementHelper {
+    private static WebDriver driver;
+
+    /**
+     * Constructor for FindElementHelper class.
+     * @param driver The WebDriver instance to be used for finding elements.
+     */
+    public FindElementHelper(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    /**
+     * Finds a web element based on the given locator and scrolls it into view.
+     * @param locator The locator used to find the web element.
+     * @return The web element found.
+     */
+    public static WebElement findElement(By locator) {
+        WebElement element = driver.findElement(locator);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+        return element;
+    }
+}
+
+/**
+ * A factory class for creating FirefoxDriver instances.
+ */
+package org.example.browser;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+
+public class FirefoxDriverFactory implements WebDriverFactory {
+
+    /**
+     * Creates a new instance of FirefoxDriver.
+     *
+     * @return A new FirefoxDriver instance.
+     */
+    @Override
+    public WebDriver createWebDriver() {
+        WebDriverManager.firefoxdriver().setup();
+        return new FirefoxDriver();
+    }
+}
+
+/**
+ * A class responsible for initializing the WebDriver based on properties loaded from a configuration file.
+ */
+package org.example.browser;
+
+import org.example.Utils.PropertiesLoader;
+import org.openqa.selenium.WebDriver;
+
+import java.io.IOException;
+import java.util.Properties;
+
+public class InitDriver {
+    private WebDriver driver;
+
+    /**
+     * Initializes the WebDriver based on properties loaded from a configuration file.
+     */
+    public InitDriver() {
+        try {
+            Properties properties = new PropertiesLoader().loadProperties("src/main/resources/webDriver.properties");
+
+            driver = WebDriverCreate.createWebDriver(properties);
+
+            WebDriverManager driverManager = new WebDriverManager(driver);
+            driverManager.maximizeWindow();
+            driverManager.navigateToUrl(properties.getProperty("url"));
+            driverManager.setImplicitWait(5);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Get the initialized WebDriver instance.
+     *
+     * @return The initialized WebDriver instance.
+     */
+    public WebDriver getDriver() {
+        return driver;
+    }
+}
+
+/**
+ * A class for log management.
+ */
+package org.example.lifeCycle;
+
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
+
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
+public class LogExtension implements BeforeAllCallback, ExtensionContext.Store.CloseableResource {
+
+    private static Logger logger = Logger.getLogger("TestLogger");
+    private FileHandler fileHandler;
+    private static boolean isRun = false;
+
+    /**
+     * Callback that is invoked once before all tests in the current container.
+     * This method initializes the log file.
+     *
+     * @param context the current extension context; never null
+     */
+    @Override
+    public void beforeAll(ExtensionContext context) throws Exception {
+        if (!isRun) {
+            context.getRoot().getStore(ExtensionContext.Namespace.GLOBAL).put("StartTests", this);
+
+            try {
+                // Specify the file path where the log file will be created
+                fileHandler = new FileHandler("test.log");
+                logger.addHandler(fileHandler);
+                SimpleFormatter formatter = new SimpleFormatter();
+                fileHandler.setFormatter(formatter);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            isRun = true;
+        }
+    }
+
+    /**
+     * Close underlying resources.
+     *
+     * @throws Throwable any throwable will be caught and rethrown
+     */
+    @Override
+    public void close() throws Throwable {
+        fileHandler.close();
+    }
+
+    /**
+     * Write information to the log file.
+     *
+     * @param info The information to be written to the log.
+     */
+    public static void writeToLog(String info) {
+        logger.info(info);
+    }
+}
+
+package org.example;
+
+/**
+ * Main.
+ */
+//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
+// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+public class Main {
+
+}
+
+/**
+ * A utility class for loading properties from a file.
+ */
+package org.example.Utils;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+public class PropertiesLoader {
+    /**
+     * Loads properties from a file.
+     *
+     * @param path the name of the file to load properties from
+     * @return a Properties object containing the loaded properties
+     * @throws IOException if an I/O error occurs while reading the file
+     */
+    public Properties loadProperties(String path) throws IOException {
+        Properties properties = new Properties();
+        properties.load(new FileInputStream(path));
+        return properties;
+    }
+}
+
+/**
+ * The Retry class provides a utility method for retrying a function a specified number of times.
+ */
+package org.example.Utils;
+
+import static org.example.lifeCycle.LogExtension.writeToLog;
+
+public class Retry {
+
+    /**
+     * Retries a function a specified number of times.
+     *
+     * @param function   The function to be retried.
+     * @param maxRetries The maximum number of retries allowed.
+     * @throws RuntimeException if the function does not succeed after all retries.
+     */
+    public static void retry(Runnable function, int maxRetries, long delayMillis) {
+        Exception exception = null;
+        int retries = 0;
+        while (retries < maxRetries) {
+            try {
+                function.run();
+                return;
+            } catch (Exception e) {
+                writeToLog("Retrying... (" + (retries + 1) + "/" + maxRetries + ")");
+                retries++;
+                exception = e;
+                try {
+                    Thread.sleep(delayMillis);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+        throw new RuntimeException("Max retries exceeded. Function did not succeed:\n" + exception.getMessage());
+    }
+}
+
+/**
+ * A utility class for capturing and attaching screenshots to test reports using Allure.
+ */
+package org.example.Utils;
+
+import io.qameta.allure.Attachment;
+import org.example.lifeCycle.Extension;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+
+public class Screenshot {
+    /**
+     * Takes a screenshot of the current WebDriver instance and attaches it to the test report.
+     *
+     * @param context the extension context to retrieve the WebDriver instance
+     * @return a byte array representing the screenshot in PNG format
+     */
+    @Attachment(value = "Screenshot", type = "image/png")
+    public static byte[] takeScreenshot(ExtensionContext context) {
+        WebDriver driver = Extension.getDriverFromContext(context);
+        return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+    }
+}
+
+/**
+ * A custom TestWatcher implementation for monitoring test execution in JUnit 5.
+ */
+package org.example.lifeCycle;
+
+import io.qameta.allure.Step;
+import org.example.Utils.Screenshot;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestWatcher;
+
+import java.util.Optional;
+
+public class TestWatcherProject extends LogExtension implements TestWatcher {
+    /**
+     * Invoked when a test method finishes successfully.
+     *
+     * @param context the extension context for the test
+     */
+    @Override
+    @Step
+    public void testSuccessful(ExtensionContext context) {
+        writeToLog(context.getDisplayName() + " Success!!");
+    }
+
+    /**
+     * Invoked when a test method fails.
+     *
+     * @param context the extension context for the test
+     * @param cause   the cause of the test failure
+     */
+    @Override
+    public void testFailed(ExtensionContext context, Throwable cause) {
+        writeToLog(context.getDisplayName() + " Failed!!\n" + cause.getLocalizedMessage());
+        Screenshot.takeScreenshot(context); // add screenshot to Allure
+    }
+
+    /**
+     * Invoked when a test method is aborted.
+     *
+     * @param context the extension context for the test
+     * @param cause   the cause of the test abortion
+     */
+    @Override
+    public void testAborted(ExtensionContext context, Throwable cause) {
+        writeToLog(context.getDisplayName() + " Aborted!!");
+    }
+
+    /**
+     * Invoked when a test method is disabled.
+     *
+     * @param context the extension context for the test
+     * @param reason  the reason why the test was disabled
+     */
+    @Override
+    public void testDisabled(ExtensionContext context, Optional<String> reason) {
+        writeToLog(context.getDisplayName() + " Disabled!!");
+    }
+}
+
+import io.qameta.allure.Description;
+import org.example.Annotations.DriverAndLoggerExtension;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+
+import static org.example.ActionsForDriver.ActionHandler.click;
+import static org.example.ActionsForDriver.FindElementHelper.findElement;
+import static org.example.lifeCycle.Extension.getDriver;
+
+
+@DriverAndLoggerExtension
+public class tryTest {
+    static WebDriver driver = getDriver();
+
+//    @Test
+//    @Description("test 1 try")
+//    void test1()
+//    {
+//        System.out.println("test1-step1");
+//        //sendKeys(By.className("gLFyf"),"verisoft");
+//        //click(By.className("gNO89b"));
+//        //driver.findElement(By.className("gLFyf")).sendKeys("verisoft");
+//        //driver.findElement(By.xpath("//li[@id='menu-item-51']//a")).click();
+//        click(By.xpath("//li[@id='menu-item-958']//a"));
+//    }
+
+    @Test
+    @Description("test 2 try")
+    void test2() {
+        WebElement element = findElement(By.xpath("//li[@id='aaa']//a"));
+        //click(By.xpath("//li[@id='aaa']//a"));
+    }
+}
+
+/**
+ * A utility class for handling explicit waits in Selenium WebDriver.
+ */
+package org.example.Utils;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
+
+public class WaitUtility {
+    private WebDriver driver;
+    private WebDriverWait wait;
+
+    /**
+     * Initializes the WaitUtility with the WebDriver and sets up a WebDriverWait with a default timeout of 10 seconds.
+     *
+     * @param driver the WebDriver instance to use for waiting
+     */
+    public WaitUtility(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    /**
+     * Waits for the element to be clickable.
+     *
+     * @param elem the WebElement to wait for
+     * @return the clickable WebElement
+     */
+    public WebElement waitForElementToBeClickable(WebElement elem) {
+        return wait.until(ExpectedConditions.elementToBeClickable(elem));
+    }
+
+    /**
+     * Waits for the element to be visible.
+     *
+     * @param locator the By locator of the element to wait for
+     * @return the visible WebElement
+     */
+    public WebElement waitForElementToBeVisible(By locator) {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+    }
+
+    /**
+     * Waits for the element to be present in the DOM.
+     *
+     * @param locator the By locator of the element to wait for
+     * @return the present WebElement
+     */
+    public WebElement waitForElementToBePresent(By locator) {
+        return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+    }
+}
+
+/**
+ * A utility class for creating WebDriver instances based on properties provided.
+ */
+package org.example.browser;
+
+import org.openqa.selenium.WebDriver;
+
+import java.util.InvalidPropertiesFormatException;
+import java.util.Properties;
+
+import static org.example.lifeCycle.LogExtension.writeToLog;
+
+public class WebDriverCreate {
+
+    /**
+     * Creates a WebDriver instance based on the specified properties.
+     *
+     * @param properties The properties containing the driver type information.
+     * @return The created WebDriver instance.
+     */
+    public static WebDriver createWebDriver(Properties properties) {
+        String driverType = properties.getProperty("driver");
+        WebDriverFactory driverFactory;
+        try {
+            switch (driverType.toLowerCase()) {
+                case "chrome":
+                    driverFactory = new ChromeDriverFactory();
+                    break;
+                case "firefox":
+                    driverFactory = new FirefoxDriverFactory();
+                    break;
+                case "edge":
+                    driverFactory = new EdgeDriverFactory();
+                    break;
+                default:
+                    throw new InvalidPropertiesFormatException("The driver is not valid");
+            }
+            return driverFactory.createWebDriver();
+        } catch (Exception e) {
+            writeToLog(e.getMessage());
+        }
+        return null;
+    }
+}
+
+/**
+ * An interface for creating WebDriver instances.
+ */
+package org.example.browser;
+
+import org.openqa.selenium.WebDriver;
+
+public interface WebDriverFactory {
+
+    /**
+     * Creates a new instance of WebDriver.
+     *
+     * @return The created WebDriver instance.
+     */
+    WebDriver createWebDriver();
+}
+
+/**
+ * A class for managing WebDriver operations such as window maximization, navigation, and setting implicit wait.
+ */
+package org.example.browser;
+
+import org.openqa.selenium.WebDriver;
+
+import java.util.concurrent.TimeUnit;
+
+public class WebDriverManager {
+    private WebDriver driver;
+
+    /**
+     * Constructs a new WebDriverManager with the specified WebDriver instance.
+     *
+     * @param driver The WebDriver instance to be managed.
+     */
+    public WebDriverManager(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    /**
+     * Maximizes the current window of the WebDriver.
+     */
+    public void maximizeWindow() {
+        driver.manage().window().maximize();
+    }
+
+    /**
+     * Navigates the WebDriver to the specified URL.
+     *
+     * @param url The URL to navigate to.
+     */
+    public void navigateToUrl(String url) {
+        driver.get(url);
+    }
+
+    /**
+     * Sets the implicit wait time for the WebDriver.
+     *
+     * @param seconds The number of seconds to wait implicitly.
+     */
+    public void setImplicitWait(int seconds) {
+        driver.manage().timeouts().implicitlyWait(seconds, TimeUnit.SECONDS);
+    }
+}
+

@@ -14,6 +14,8 @@ target/
 allure-results/
 checkstyle.xml
 test.log
+.mvn
+projectCode
 
 ### Eclipse ###
 .apt_generated

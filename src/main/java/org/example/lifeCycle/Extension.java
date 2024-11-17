@@ -8,6 +8,8 @@ import org.example.browser.InitDriver;
 import org.junit.jupiter.api.extension.*;
 import org.openqa.selenium.WebDriver;
 
+import static org.example.Utils.CreateFile.CreateFile;
+
 public class Extension extends LogExtension
         implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback {
 
@@ -24,6 +26,12 @@ public class Extension extends LogExtension
         driver = new InitDriver().getDriver(); // Initialize the WebDriver instance
         ActionHandler actionHandler = new ActionHandler(driver);
         setDriverInContext(context, driver);
+        //Create a property file for a parallel run
+        CreateFile("src/main/resources/junit-platform.properties",
+                "junit.jupiter.execution.parallel.enabled=true\n" +
+                        "junit.jupiter.execution.parallel.mode.default=concurrent\n" +
+                        "junit.jupiter.execution.parallel.config.strategy=fixed\n" +
+                        "junit.jupiter.execution.parallel.config.fixed.parallelism=4\n");
         writeToLog("Start " + context.getDisplayName());
     }
 

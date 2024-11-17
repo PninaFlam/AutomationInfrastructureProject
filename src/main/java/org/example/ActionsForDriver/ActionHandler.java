@@ -3,6 +3,7 @@
  */
 package org.example.ActionsForDriver;
 
+import org.example.Utils.Retry;
 import org.example.Utils.WaitUtility;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -17,6 +18,7 @@ public class ActionHandler {
 
     /**
      * Constructor for ActionHandler class.
+     *
      * @param driver The WebDriver instance to be used for actions.
      */
     public ActionHandler(WebDriver driver) {
@@ -26,16 +28,30 @@ public class ActionHandler {
     }
 
     /**
-     * Clicks on a web element identified by the given locator.
-     * @param locator The locator used to find the web element.
+     * Creates a runnable function for clicking an element identified by the given locator.
+     *
+     * @param locator The locator used to find the element to click.
+     * @return A runnable function that clicks the element.
+     */
+    private static Runnable clickRunnable(By locator) {
+        return () -> {
+            WebElement elem = FindElementHelper.findElement(locator);
+            waitUtility.waitForElementToBeClickable(elem).click();
+        };
+    }
+
+    /**
+     * Clicks an element identified by the given locator with retries in case of failure.
+     *
+     * @param locator The locator used to find the element to click.
      */
     public static void click(By locator) {
-        WebElement elem = FindElementHelper.findElement(locator);
-        waitUtility.waitForElementToBeClickable(elem).click();
+        Retry.retry(clickRunnable(locator), 3,0);
     }
 
     /**
      * Enters text into a text field identified by the given locator.
+     *
      * @param locator The locator used to find the text field.
      * @param content The text to be entered into the text field.
      */
@@ -47,6 +63,7 @@ public class ActionHandler {
 
     /**
      * Checks if a web element identified by the given locator is displayed.
+     *
      * @param locator The locator used to find the web element.
      * @return true if the element is displayed, false otherwise.
      */

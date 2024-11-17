@@ -17,7 +17,7 @@ public class InitDriver {
      */
     public InitDriver() {
         try {
-            Properties properties = new PropertiesLoader().loadProperties("webDriver.properties");
+            Properties properties = new PropertiesLoader().loadProperties("src/main/resources/webDriver.properties");
 
             driver = WebDriverCreate.createWebDriver(properties);
 

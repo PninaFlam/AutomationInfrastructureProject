@@ -1,64 +1,69 @@
-# Project README
+## Automation Infrastructure README
 
-## Overview
-This project contains classes related to handling actions for a driver using Selenium WebDriver.
+### Project Overview:
+This automation infrastructure project aims to streamline and simplify automated testing processes for web applications using Selenium WebDriver. It provides a set of utility classes and annotations to enhance test automation efficiency and maintainability.
 
-## ActionHandler Class
-- Manages actions like click, sendKeys, and isDisplayed on web elements.
-- Uses WaitUtility for element synchronization and FindElementHelper for finding elements.
+### Setup Instructions:
 
-## FindElementHelper Class
-- Helps in finding web elements using Selenium WebDriver.
-- Scrolls the element into view before returning it.
+1. **Dependency Configuration:**
+   - Add the following dependency to your project's `pom.xml` file:
+     ```xml
+     <dependency>
+         <groupId>com.example.automation</groupId>
+         <artifactId>automation-infra</artifactId>
+         <version>1.0.0</version>
+         <scope>compile</scope>
+     </dependency>
+     ```
 
-## Browser Package
-Contains classes related to browser setup and WebDriver management.
+2. **Configuration File Setup:**
+   - Create a `webDriver.properties` file in the `src/main/resources` directory with the following parameters:
+      - `driver` (chrome/edge/firefox)
+      - `url` (website URL for testing)
 
-### ChromeDriverFactory Class
-- Implements WebDriverFactory interface to create ChromeDriver instances.
+### Usage:
 
-### EdgeDriverFactory Class
-- Implements WebDriverFactory interface to create EdgeDriver instances.
+1. **Test Class Annotation:**
+   - Annotate your test class with `@DriverAndLoggerExtension` for WebDriver and logging extensions:
+     ```java
+     @DriverAndLoggerExtension
+     public class ExampleTest {
+         // Your test code here
+     }
+     ```
 
-### FirefoxDriverFactory Class
-- Implements WebDriverFactory interface to create FirefoxDriver instances.
+2. **Driver Initialization:**
+   - Import the driver initialization function in your test and initialize the WebDriver instance:
+     ```java
+     import static org.example.lifeCycle.Extension.getDriver;
+     WebDriver driver = getDriver();
+     ```
 
-### InitDriver Class
-- Initializes the WebDriver based on properties loaded from 'webDriver.properties'.
+3. **Performing Actions:**
+   - Import action functions to interact with web elements in your tests:
+     ```java
+     import static org.example.ActionsForDriver.ActionHandler.click;
+     import static org.example.ActionsForDriver.FindElementHelper.findElement;
 
-### WebDriverCreate Class
-- Creates the appropriate WebDriver based on the driver type specified in properties.
+     // Example usage:
+     findElement(By.xpath("//button[@id='submit']"));
+     click(By.id("loginButton"));
+     ```
 
-### WebDriverFactory Interface
-- Defines a method to create WebDriver instances.
+### After Test Execution:
+**Reporting to Allure:**
 
-### WebDriverManager Class
-- Manages WebDriver settings like window maximization, URL navigation, and implicit wait.
+After test execution, test results and screenshots will be automatically reported to Allure for detailed reporting and analysis.
 
-## LifeCycle Package
-Contains classes related to test execution lifecycle management.
+**Log File Creation:**
 
-### Extension Class
-- Implements JUnit 5 extension interfaces for setup and teardown operations.
-- Initializes WebDriver before all tests and quits it after all tests.
+A log file named test.log will be generated in the root directory of your project containing detailed logs and information from the test execution.
 
-### LogExtension Class
-- Manages logging for test execution.
+Ensure to review the Allure reports for comprehensive test results and refer to the test.log file for detailed logging information post-test execution.
 
-### RetryExtension Class
-- Implements retry mechanism for failed tests.
+### Additional Notes:
+- Ensure proper setup and configuration of the WebDriver properties file for accurate test execution.
+- Utilize the provided utility classes and annotations to enhance test automation reliability and maintainability.
 
-### TestWatcherProject Class
-- Monitors test execution and handles success, failure, abortion, and disabled scenarios.
+---
 
-## Utils Package
-Contains utility classes for various functionalities.
-
-### PropertiesLoader Class
-- Loads properties from a file.
-
-### Screenshot Class
-- Captures screenshots during test failures.
-
-### WaitUtility Class
-- Provides methods for waiting for elements to be clickable, visible, or present.
